@@ -1,0 +1,207 @@
+GET _search
+{
+   "query": {
+      "match_all": {}
+   }
+}
+    
+PUT /movies/movie/1
+{
+    "title": "The Godfather",
+    "director": "Francis Ford Coppola",
+    "year": 1972
+}
+
+PUT /movies/movie/1
+{
+    "title": "The Godfather",
+    "director": "Francis Ford Coppola",
+    "year": 1972,
+    "genres": ["Crime", "Drama"]
+}
+
+GET /movies/movie/1
+
+DELETE /movies/movie/1
+
+PUT /movies/movie/1
+{
+    "title": "The Godfather",
+    "director": "Francis Ford Coppola",
+    "year": 1972,
+    "genres": ["Crime", "Drama"]
+}'
+
+PUT /movies/movie/1
+{
+    "title": "The Godfather",
+    "director": "Francis Ford Coppola",
+    "year": 1972,
+    "genres": ["Crime", "Drama"]
+}
+
+PUT /movies/movie/2
+{
+    "title": "Lawrence of Arabia",
+    "director": "David Lean",
+    "year": 1962,
+    "genres": ["Adventure", "Biography", "Drama"]
+}
+
+PUT /movies/movie/3
+{
+    "title": "To Kill a Mockingbird",
+    "director": "Robert Mulligan",
+    "year": 1962,
+    "genres": ["Crime", "Drama", "Mystery"]
+}
+
+PUT /movies/movie/4
+{
+    "title": "Apocalypse Now",
+    "director": "Francis Ford Coppola",
+    "year": 1979,
+    "genres": ["Drama", "War"]
+}
+
+PUT /movies/movie/5
+{
+    "title": "Kill Bill: Vol. 1",
+    "director": "Quentin Tarantino",
+    "year": 2003,
+    "genres": ["Action", "Crime", "Thriller"]
+}
+
+PUT /movies/movie/6
+{
+    "title": "The Assassination of Jesse James by the Coward Robert Ford",
+    "director": "Andrew Dominik",
+    "year": 2007,
+    "genres": ["Biography", "Crime", "Drama"]
+}
+
+POST /_search
+{
+    "query": {
+        "query_string": {
+            "query": "kill"
+        }
+    }
+}
+
+POST /_search
+{
+    "query": {
+        "query_string": {
+            "query": "ford",
+            "fields": ["title"]
+        }
+    }
+}
+
+POST /_search
+{
+    "query": {
+        "query_string": {
+            "query": "drama"
+        }
+    }
+}
+
+POST /_search
+{
+    "query": {
+        "bool": {
+            "must": {
+                "multi_match": {
+                    "fields": [
+                        "title",
+                        "director",
+                        "genres"
+                    ],
+                    "query": "drama"
+                }
+            },
+            "filter": {
+                "terms": {
+                    "year": [
+                        1962
+                    ]
+                }
+            }
+        }
+    }
+}
+
+POST /_search
+{
+    "query": {
+        "constant_score": {
+            "filter": {
+                "term": { "year": 1962 }
+            }
+        }
+    }
+}
+
+POST /_search
+{
+    "query": {
+        "constant_score": {
+            "filter": {
+                "term": { "director": "Francis Ford Coppola" }
+            }
+        }
+    }
+}
+
+# doesn't work'
+POST /_search
+{
+    "query": {
+        "constant_score": {
+            "filter": {
+                "term": { "director": "francis" }
+            }
+        }
+    }
+}
+
+PUT /movies/movie/_mapping
+{
+   "movie": {
+      "properties": {
+         "director": {
+            "type": "string",
+            "index": "not_analyzed"
+        }
+      }
+   }
+}
+
+PUT /movies/movie/_mapping
+{
+   "movie": {
+      "properties": {
+         "director": {
+            "type": "string",
+            "fields": {
+                "director": {"type": "string"},
+                "original": {"type" : "string", "index" : "not_analyzed"}
+            }
+         }
+      }
+   }
+}
+
+POST /_search
+{
+    "query": {
+        "constant_score": {
+            "filter": {
+                "term": { "director.original": "Francis Ford Coppola" }
+            }
+        }
+    }
+}
+
