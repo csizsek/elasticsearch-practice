@@ -1,0 +1,5 @@
+curl localhost:9200/_cat/health?v
+
+curl localhost:9200/_cat/nodes?v
+
+curl localhost:9200/_cat/indices?v
